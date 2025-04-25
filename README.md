@@ -4,31 +4,30 @@ A responsive web application that allows users to search, filter, and sort docto
 
 ## Application Screenshots
 
-### Search and Filter Interface
+
 ![Search Interface](./public/Screenshot%202025-04-25%20180243.png)
 
-### Doctor Listings View
+
 ![Doctor Listings](./public/Screenshot%202025-04-25%20182514.png)
 
-### Filter Selection
+
 ![Filter Options](./public/Screenshot%202025-04-25%20184907.png)
 
-### Specialty Selection
+
 ![Specialty Selection](./public/Screenshot%202025-04-25%20184935.png)
 
-### Sorting Options
+
 ![Sorting Options](./public/Screenshot%202025-04-25%20184955.png)
 
-### Mobile View
+
 ![Mobile Interface](./public/Screenshot%202025-04-25%20185007.png)
 
-### Search Results
+
 ![Search Results](./public/Screenshot%202025-04-25%20185028.png)
 
-### Filtered Results
+
 ![Filtered Results](./public/Screenshot%202025-04-25%20185051.png)
 
-### Additional View
 ![Additional View](./public/Screenshot%202025-04-25%20185137.png)
 
 ## 📝 Table of Contents
