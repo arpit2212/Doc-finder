@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Header from './components/Header'
 import FilterPanel from './components/FilterPanel'
@@ -14,22 +14,17 @@ function App() {
   const [error, setError] = useState(null)
   const [specialties, setSpecialties] = useState([])
   
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const doctorsPerPage = 7 // 7 doctors per page
-
   // Get all query params
   const searchQuery = searchParams.get('search') || ''
   const consultType = searchParams.get('consultType') || ''
   const selectedSpecialties = searchParams.getAll('specialty') || []
   const sortBy = searchParams.get('sortBy') || ''
   const page = parseInt(searchParams.get('page')) || 1
+  
+  // Pagination state - derived from URL
+  const doctorsPerPage = 7 // 7 doctors per page
 
-  useEffect(() => {
-    // Set current page from URL when component mounts
-    setCurrentPage(page)
-  }, [page])
-
+  // Fetch doctors data
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
@@ -58,11 +53,11 @@ function App() {
     }
 
     fetchDoctors()
-  }, [])
+  }, []) // Empty dependency array to run only once
 
   // Apply filters and search
   useEffect(() => {
-    if (doctors.length === 0) return
+    if (!doctors.length) return
 
     let filtered = [...doctors]
 
@@ -105,74 +100,80 @@ function App() {
     }
 
     setFilteredDoctors(filtered)
-    
-    // Reset to page 1 when filters change
-    if (currentPage !== 1) {
-      handlePageChange(1)
-    }
-  }, [doctors, searchQuery, consultType, selectedSpecialties, sortBy])
+  }, [doctors, searchQuery, consultType, selectedSpecialties.toString(), sortBy])
+  // Changed dependency to ensure array equality check works properly
 
-  const handleSearch = (query) => {
-    if (query) {
-      searchParams.set('search', query)
-    } else {
-      searchParams.delete('search')
-    }
-    // Reset to page 1 when searching
-    searchParams.set('page', '1')
-    setSearchParams(searchParams)
-  }
-
-  const handleConsultTypeChange = (type) => {
-    if (type) {
-      searchParams.set('consultType', type)
-    } else {
-      searchParams.delete('consultType')
-    }
-    // Reset to page 1 when filters change
-    searchParams.set('page', '1')
-    setSearchParams(searchParams)
-  }
-
-  const handleSpecialtyChange = (specialty, isChecked) => {
-    const current = searchParams.getAll('specialty')
-    
-    if (isChecked) {
-      if (!current.includes(specialty)) {
-        searchParams.append('specialty', specialty)
+  // Memoize handlers to prevent recreating them on each render
+  const handleSearch = useCallback((query) => {
+    setSearchParams(params => {
+      const newParams = new URLSearchParams(params)
+      if (query) {
+        newParams.set('search', query)
+      } else {
+        newParams.delete('search')
       }
-    } else {
-      const updated = current.filter(s => s !== specialty)
-      searchParams.delete('specialty')
-      updated.forEach(s => searchParams.append('specialty', s))
-    }
-    
-    // Reset to page 1 when filters change
-    searchParams.set('page', '1')
-    setSearchParams(searchParams)
-  }
+      newParams.set('page', '1')
+      return newParams
+    })
+  }, [setSearchParams])
 
-  const handleSortChange = (sortOption) => {
-    if (sortOption) {
-      searchParams.set('sortBy', sortOption)
-    } else {
-      searchParams.delete('sortBy')
-    }
-    // Reset to page 1 when sorting changes
-    searchParams.set('page', '1')
-    setSearchParams(searchParams)
-  }
+  const handleConsultTypeChange = useCallback((type) => {
+    setSearchParams(params => {
+      const newParams = new URLSearchParams(params)
+      if (type) {
+        newParams.set('consultType', type)
+      } else {
+        newParams.delete('consultType')
+      }
+      newParams.set('page', '1')
+      return newParams
+    })
+  }, [setSearchParams])
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-    searchParams.set('page', pageNumber.toString())
-    setSearchParams(searchParams)
+  const handleSpecialtyChange = useCallback((specialty, isChecked) => {
+    setSearchParams(params => {
+      const newParams = new URLSearchParams(params)
+      const current = newParams.getAll('specialty')
+      
+      newParams.delete('specialty')
+      if (isChecked) {
+        // Add the new specialty
+        [...current, specialty].forEach(s => newParams.append('specialty', s))
+      } else {
+        // Remove the specialty
+        current.filter(s => s !== specialty).forEach(s => newParams.append('specialty', s))
+      }
+      
+      newParams.set('page', '1')
+      return newParams
+    })
+  }, [setSearchParams])
+
+  const handleSortChange = useCallback((sortOption) => {
+    setSearchParams(params => {
+      const newParams = new URLSearchParams(params)
+      if (sortOption) {
+        newParams.set('sortBy', sortOption)
+      } else {
+        newParams.delete('sortBy')
+      }
+      newParams.set('page', '1')
+      return newParams
+    })
+  }, [setSearchParams])
+
+  const handlePageChange = useCallback((pageNumber) => {
+    setSearchParams(params => {
+      const newParams = new URLSearchParams(params)
+      newParams.set('page', pageNumber.toString())
+      return newParams
+    })
     // Scroll to top when changing pages
     window.scrollTo(0, 0)
-  }
+  }, [setSearchParams])
 
   // Get current doctors for pagination
-  const indexOfLastDoctor = currentPage * doctorsPerPage
+  const indexOfLastDoctor = page * doctorsPerPage
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage
   const currentDoctors = filteredDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor)
   const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage)
@@ -201,13 +202,13 @@ function App() {
           <DoctorList 
             doctors={currentDoctors} 
             totalDoctors={filteredDoctors.length}
-            currentPage={currentPage}
+            currentPage={page}
             doctorsPerPage={doctorsPerPage}
           />
           
           {filteredDoctors.length > doctorsPerPage && (
             <Pagination 
-              currentPage={currentPage}
+              currentPage={page}
               totalPages={totalPages}
               onPageChange={handlePageChange}
             />
