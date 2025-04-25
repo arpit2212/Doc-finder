@@ -2,7 +2,33 @@
 
 A responsive web application that allows users to search, filter, and sort doctor listings using client-side data manipulation.
 
-![Doctor Listing Demo](https://via.placeholder.com/800x450?text=Doctor+Listing+App)
+## Application Screenshots
+
+
+![Search Interface](./public/Screenshot%202025-04-25%20180243.png)
+
+
+![Doctor Listings](./public/Screenshot%202025-04-25%20182514.png)
+
+
+![Filter Options](./public/Screenshot%202025-04-25%20184907.png)
+
+
+![Specialty Selection](./public/Screenshot%202025-04-25%20184935.png)
+
+
+![Sorting Options](./public/Screenshot%202025-04-25%20184955.png)
+
+
+![Mobile Interface](./public/Screenshot%202025-04-25%20185007.png)
+
+
+![Search Results](./public/Screenshot%202025-04-25%20185028.png)
+
+
+![Filtered Results](./public/Screenshot%202025-04-25%20185051.png)
+
+![Additional View](./public/Screenshot%202025-04-25%20185137.png)
 
 ## 📝 Table of Contents
 - [Features](#features)
@@ -60,22 +86,22 @@ Check out the live demo [here](#) (replace with your deployment link)
 ## ⚙ Installation
 
 1. Clone the repository:
-   bash
+   ```bash
    git clone https://github.com/yourusername/doctor-listing.git
    cd doctor-listing
-   
+   ```
 
 2. No build process required for basic usage. Just open index.html in your browser or use a local server:
-   bash
+   ```bash
    # Using Python's built-in server
    python -m http.server
    # OR using Node.js with http-server (install it globally first)
    npm install -g http-server
    http-server
-   
+   ```
 
 3. If you want to modify the Tailwind CSS:
-   bash
+   ```bash
    # Install dependencies
    npm install
    
@@ -84,7 +110,7 @@ Check out the live demo [here](#) (replace with your deployment link)
    
    # Build CSS (production mode)
    npm run build
-   
+   ```
 
 ## 📋 Usage
 
@@ -107,14 +133,13 @@ The application fetches doctor data from the following endpoint:
 
 https://srijandubey.github.io/campus-api-mock/SRM-C1-25.json
 
-
 - Data is fetched once on page load
 - All filtering and sorting operations happen client-side
 - No additional API calls are made during filtering
 
 ## 📁 Project Structure
 
-
+```
 doctor-listing/
 ├── index.html           # Main HTML file with structure
 ├── src/
@@ -126,12 +151,12 @@ doctor-listing/
 ├── package.json         # Project dependencies
 ├── README.md            # Project documentation
 └── screenshots/         # Application screenshots
-
+```
 
 ## 🔍 Implementation Details
 
 ### Doctor Data Structure
-javascript
+```javascript
 {
   "name": "Dr. Example Name",
   "specialty": ["Cardiologist", "General Physician"],
@@ -139,7 +164,7 @@ javascript
   "fees": 800,
   "consultation_type": "Video Consult"
 }
-
+```
 
 ### Key JavaScript Functions
 - fetchDoctors(): Retrieves doctor data from the API
